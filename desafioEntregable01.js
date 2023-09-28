@@ -7,7 +7,7 @@ class ProductManager {
 
     //Se crea el retorno para ver los productos ingresados.
     getProducts(){
-        return this.products;
+        return console.log(this.products);
     }
     
     //Se crea un metodo para agregar un nuevo producto a la lista de productos.
@@ -38,19 +38,23 @@ class ProductManager {
     isNotValidCode = (code) => this.products.some((product) => product.code === code)
 
     //Verificación si existe un producto con el ID
-    getProductById(id){
-        
-    }
-
+        getProductById = (id) => {
+            const product = this.products.find((product) => product.id == id);
+    
+            product ?
+            console.log(product):
+            console.log(`No hay un producto con el número de ID ${id}.`)
+        }
 }
 
 const manager = new ProductManager();
 
 
-console.log(manager.getProducts());
+manager.getProducts();
 manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
-console.log(manager.getProducts());
+manager.getProducts();
 manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
-console.log(manager.getProducts());
+manager.getProducts();
 manager.addProduct("Monster","Bebida energizante",800,"monster.jpg","msndf4",555);
-console.log(manager.getProducts());
+manager.getProducts();
+manager.getProductById(2)
