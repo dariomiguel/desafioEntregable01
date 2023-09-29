@@ -47,14 +47,31 @@ class ProductManager {
         }
 }
 
+
+/*Consignas
+DESAFÍO ENTREGABLE - PROCESO DE TESTING*/
+
+//1_Se creará una instancia de la clase “ProductManager”
 const manager = new ProductManager();
 
+//2_Se llamará “getProducts” recién creada la instancia, debe devolver un arreglo vacío []
+manager.getProducts();
 
-manager.getProducts();
+/*3_Se llamará al método “addProduct” con los campos:
+title: “producto prueba”
+description:”Este es un producto prueba”
+price:200,
+thumbnail:”Sin imagen”
+code:”abc123”,
+stock:25*/
 manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
+
+//4_El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
+//5_Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
 manager.getProducts();
+
+//6_Se llamará al método “addProduct” con los mismos campos de arriba, debe arrojar un error porque el código estará repetido.
 manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
-manager.getProducts();
-manager.addProduct("Monster","Bebida energizante",800,"monster.jpg","msndf4",555);
-manager.getProducts();
+
+//7_Se evaluará que getProductById devuelva error si no encuentra el producto o el producto en caso de encontrarlo
 manager.getProductById(2)
