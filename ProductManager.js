@@ -1,5 +1,9 @@
+//Importamos el módulo para interactuar con archivos
+const fs = require('fs')
+
 //Creamos la clase ProductManager que contendra los productos y metodos que necesitemos para la actividad.
 class ProductManager {
+
     //Se construye el elemento inicial (un array vacío).
     constructor(){
         this.products = [];
@@ -12,28 +16,37 @@ class ProductManager {
     
     //Se crea un método para agregar un nuevo producto a la lista de productos.
     add(title, description, price, thumbnail, code, stock){
-            const product = {
-                id: this.products.length,
-                title : title,
-                description: description,
-                price: price,
-                thumbnail: thumbnail,
-                code: code,
-                stock: stock
-            }
+        const product = {
+            id: this.products.length,
+            title : title,
+            description: description,
+            price: price,
+            thumbnail: thumbnail,
+            code: code,
+            stock: stock
+        }
+
         this.products.push(product);
+
     }
 
     //Se crea el método para agregar productos validando previamente.
     addProduct(title, description, price, thumbnail, code, stock){
+
+        //Antes de agregar verifica si es válido o no
         if (this.isNotValidCode(title, description, price, thumbnail, code, stock)){
             console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código no se repita!"); 
             return
-        } //Antes de agregar verifica si es válido o no
+        } 
 
-        //Si no es válido arroja un error, si es válido la agrega a la lista.
+        //Si es válido la agrega a la lista.
         this.add(title, description, price, thumbnail, code, stock);
-        console.log(this.products); 
+        this.addAsync(JSON.stringify(this.products));        
+    }
+
+    //Método asincronico para agregar los objetos.
+    addAsync = async(data)=>{
+        await fs.promises.writeFile("./database.json",data);
     }
 
     //Validación para verificar que el código no se repita o que no se hayan cargado todos los datos.
@@ -93,7 +106,6 @@ thumbnail:”Sin imagen”
 code:”abc123”,
 stock:25*/
 manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
-
 //4_El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
 //5_Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
 manager.getProducts();
@@ -103,6 +115,11 @@ console.log("---------------------------------------")
 manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
 console.log("---------------------------------------")
 
+manager.addProduct("a","A","A","AAAA","a",3123123);
+//4_El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
+//5_Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
+manager.getProducts();
+console.log("---------------------------------------")
 
 //7_Se evaluará que getProductById devuelva error si no encuentra el producto o el producto en caso de encontrarlo
 manager.getProductById(2);
