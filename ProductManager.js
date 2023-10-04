@@ -10,7 +10,7 @@ class ProductManager {
         return console.log(this.products);
     }
     
-    //Se crea un metodo para agregar un nuevo producto a la lista de productos.
+    //Se crea un método para agregar un nuevo producto a la lista de productos.
     add(title, description, price, thumbnail, code, stock){
             const product = {
                 id: this.products.length,
@@ -54,6 +54,24 @@ class ProductManager {
         console.log(product):
         console.log(`No hay un producto con el número de ID ${id}.`)
     }
+
+    //Cambiar uno de los campos
+    updateProduct = (opcion) => {
+        console.log("Seleccione el id del producto");
+        
+        this.getProductById();
+
+        console.log(`Seleccione la opción que desea modificar:
+        1_Nombre de producto 
+        2_Descripción del producto
+        3_Precio
+        4_Ruta de imagen
+        5_Código identificador
+        6_Stock`)
+    }
+
+    //
+    deleteProduct
 }
 
 
