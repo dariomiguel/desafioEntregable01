@@ -1,4 +1,5 @@
 //Importamos el módulo para interactuar con archivos
+const { log, error } = require('console');
 const fs = require('fs')
 
 //Creamos la clase ProductManager que contendra los productos y metodos que necesitemos para la actividad.
@@ -7,11 +8,34 @@ class ProductManager {
     //Se construye el elemento inicial (un array vacío).
     constructor(){
         this.products = [];
+        this.path = "./database.json";
     }
 
     //Se crea el retorno para ver los productos ingresados.
     getProducts(){
-        return console.log(this.products);
+        //verificamos que exista el archivo antes de leerlo
+        if(fs.existsSync(this.path)){
+            this.lecturaProductos();
+        }else{
+            fs.promises.writeFile(this.path, "[]")
+                .then(() => {
+                    this.lecturaProductos();
+                })
+                .catch((error) => {
+                    console.log("Ocurrio un error", error);
+                })
+        }
+    }
+
+    lecturaProductos = async() => {
+        const lecturaDBProductos = fs.promises.readFile(this.path, "utf-8")
+        lecturaDBProductos
+            .then((lecturaDBProductos) => {
+                return console.log(lecturaDBProductos);
+            })
+            .catch((error) => {
+                return console.log("No se pudo leer el archivo!!!!",error);
+            })
     }
     
     //Se crea un método para agregar un nuevo producto a la lista de productos.
@@ -35,19 +59,28 @@ class ProductManager {
 
         //Antes de agregar verifica si es válido o no
         if (this.isNotValidCode(title, description, price, thumbnail, code, stock)){
-            console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código no se repita!"); 
+            console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!"); 
             return
         } 
 
-        //Si es válido la agrega a la lista.
+        //Si es válido la agrega al array de lista de productos.
         this.add(title, description, price, thumbnail, code, stock);
-        this.addAsync(JSON.stringify(this.products));        
+
+        this.addAsync(JSON.stringify(this.products))    
     }
 
     //Método asincronico para agregar los objetos.
     addAsync = async(data)=>{
-        await fs.promises.writeFile("./database.json",data);
+
+        fs.promises.writeFile(this.path,data)
+            .then(() => {
+                console.log("Se ejecutó exitosamente la escritura del archivo")
+            })
+            .catch((error) => {
+                console.log("Hubo un error en el código ", error);
+            })
     }
+
 
     //Validación para verificar que el código no se repita o que no se hayan cargado todos los datos.
     isNotValidCode = (title, description, price, thumbnail, code, stock) => { 
@@ -89,7 +122,7 @@ class ProductManager {
 
 
 /*Consignas
-DESAFÍO ENTREGABLE - PROCESO DE TESTING*/
+DESAFÍO ENTREGABLE - PROCESO DE TESTING
 
 //1_Se creará una instancia de la clase “ProductManager”
 const manager = new ProductManager();
@@ -98,14 +131,14 @@ const manager = new ProductManager();
 manager.getProducts();
 console.log("---------------------------------------")
 
-/*3_Se llamará al método “addProduct” con los campos:
-title: “producto prueba”
-description:”Este es un producto prueba”
-price:200,
-thumbnail:”Sin imagen”
-code:”abc123”,
-stock:25*/
-manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
+//3_Se llamará al método “addProduct” con los campos:
+//title: “producto prueba”
+//description:”Este es un producto prueba”
+//price:200,
+//thumbnail:”Sin imagen”
+//code:”abc123”,
+//stock:25
+//manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
 //4_El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
 //5_Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
 manager.getProducts();
@@ -123,3 +156,10 @@ console.log("---------------------------------------")
 
 //7_Se evaluará que getProductById devuelva error si no encuentra el producto o el producto en caso de encontrarlo
 manager.getProductById(2);
+*/
+
+const manager = new ProductManager();
+manager.getProducts();
+console.log("---------------------------------------")
+// manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
+// manager.getProducts();
