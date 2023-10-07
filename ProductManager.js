@@ -1,48 +1,42 @@
 //Importamos el módulo para interactuar con archivos
-const { log, error } = require('console');
 const fs = require('fs')
 
 //Creamos la clase ProductManager que contendra los productos y metodos que necesitemos para la actividad.
 class ProductManager {
 
     //Se construye el elemento inicial (un array vacío).
-    constructor(){
+    constructor() {
         this.products = [];
         this.path = "./database.json";
     }
 
     //Se crea el retorno para ver los productos ingresados.
-    getProducts(){
-        //verificamos que exista el archivo antes de leerlo
-        if(fs.existsSync(this.path)){
-            this.lecturaProductos();
-        }else{
-            fs.promises.writeFile(this.path, "[]")
-                .then(() => {
-                    this.lecturaProductos();
-                })
-                .catch((error) => {
-                    console.log("Ocurrio un error", error);
-                })
+    getProducts = async () => {
+        //Verificamos que exista el archivo antes de leerlo
+        try {
+            const lectura = await this.lecturaProductos();
+            return JSON.parse(lectura) 
+        }catch (e) {
+            return []
         }
     }
 
-    lecturaProductos = async() => {
+    lecturaProductos = async () => {
         const lecturaDBProductos = fs.promises.readFile(this.path, "utf-8")
         lecturaDBProductos
             .then((lecturaDBProductos) => {
                 return console.log(lecturaDBProductos);
             })
             .catch((error) => {
-                return console.log("No se pudo leer el archivo!!!!",error);
+                return console.log("No se pudo leer el archivo!!!!", error);
             })
     }
-    
+
     //Se crea un método para agregar un nuevo producto a la lista de productos.
-    add(title, description, price, thumbnail, code, stock){
+    add(title, description, price, thumbnail, code, stock) {
         const product = {
             id: this.products.length,
-            title : title,
+            title: title,
             description: description,
             price: price,
             thumbnail: thumbnail,
@@ -55,24 +49,22 @@ class ProductManager {
     }
 
     //Se crea el método para agregar productos validando previamente.
-    addProduct(title, description, price, thumbnail, code, stock){
+    addProduct(title, description, price, thumbnail, code, stock) {
 
         //Antes de agregar verifica si es válido o no
-        if (this.isNotValidCode(title, description, price, thumbnail, code, stock)){
-            console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!"); 
+        if (this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
+            console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
             return
-        } 
+        }
 
         //Si es válido la agrega al array de lista de productos.
         this.add(title, description, price, thumbnail, code, stock);
-
-        this.addAsync(JSON.stringify(this.products))    
+        this.addAsync(JSON.stringify(this.products, undefined, "\t"))
     }
 
     //Método asincronico para agregar los objetos.
-    addAsync = async(data)=>{
-
-        fs.promises.writeFile(this.path,data)
+    addAsync = async (data) => {
+        fs.promises.writeFile(this.path, data)
             .then(() => {
                 console.log("Se ejecutó exitosamente la escritura del archivo")
             })
@@ -83,7 +75,7 @@ class ProductManager {
 
 
     //Validación para verificar que el código no se repita o que no se hayan cargado todos los datos.
-    isNotValidCode = (title, description, price, thumbnail, code, stock) => { 
+    isNotValidCode = (title, description, price, thumbnail, code, stock) => {
         //Verificamos que existe un codigo con el mismo nombre.
         const checker = this.products.some((product) => product.code === code);
         //Verificamos que esten todos los productos en la carga de datos.
@@ -97,14 +89,14 @@ class ProductManager {
         const product = this.products.find((product) => product.id == id);
 
         product ?
-        console.log(product):
-        console.log(`No hay un producto con el número de ID ${id}.`)
+            console.log(product) :
+            console.log(`No hay un producto con el número de ID ${id}.`)
     }
 
     //Cambiar uno de los campos
     updateProduct = (opcion) => {
         console.log("Seleccione el id del producto");
-        
+
         this.getProductById();
 
         console.log(`Seleccione la opción que desea modificar:
@@ -159,7 +151,14 @@ manager.getProductById(2);
 */
 
 const manager = new ProductManager();
+// manager.getProducts();
+// console.log("---------------------------------------")
+manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123", 25);
+console.log("Se creo el primer archivo");
+
 manager.getProducts();
+console.log("Mostramos archivo");
+
 console.log("---------------------------------------")
-// manager.addProduct("producto prueba","Este es un producto prueba",200,"Sin imagen","abc123",25);
+manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123", 25);
 // manager.getProducts();
