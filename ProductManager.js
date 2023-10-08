@@ -14,22 +14,18 @@ class ProductManager {
     getProducts = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
-            const lectura = await this.lecturaProductos();
-            return JSON.parse(lectura) 
+            const lecturaJson = await fs.promises.readFile(this.path, "utf-8");
+            const lectura = lecturaJson === "" ? "[]" : JSON.parse(lecturaJson)
+            return console.log(lectura)
         }catch (e) {
-            return []
+            if (e.code === "ENOENT" ) {
+                await this.addAsync(this.products); // Crear el archivo
+                return console.log(this.products);;
+            } else {
+                console.error("Error al leer el archivo:", e);
+                throw e;
+            }
         }
-    }
-
-    lecturaProductos = async () => {
-        const lecturaDBProductos = fs.promises.readFile(this.path, "utf-8")
-        lecturaDBProductos
-            .then((lecturaDBProductos) => {
-                return console.log(lecturaDBProductos);
-            })
-            .catch((error) => {
-                return console.log("No se pudo leer el archivo!!!!", error);
-            })
     }
 
     //Se crea un método para agregar un nuevo producto a la lista de productos.
@@ -59,17 +55,18 @@ class ProductManager {
 
         //Si es válido la agrega al array de lista de productos.
         this.add(title, description, price, thumbnail, code, stock);
-        this.addAsync(JSON.stringify(this.products, undefined, "\t"))
+        this.addAsync(this.products, undefined, "\t");
     }
 
     //Método asincronico para agregar los objetos.
     addAsync = async (data) => {
+        data = JSON.stringify(data);
         fs.promises.writeFile(this.path, data)
             .then(() => {
                 console.log("Se ejecutó exitosamente la escritura del archivo")
             })
             .catch((error) => {
-                console.log("Hubo un error en el código ", error);
+                console.log("Hubo un error en la escritura del archivo ", error);
             })
     }
 
@@ -109,12 +106,12 @@ class ProductManager {
     }
 
     //
-    deleteProduct
+    // deleteProduct
 }
 
 
 /*Consignas
-DESAFÍO ENTREGABLE - PROCESO DE TESTING
+DESAFÍO ENTREGABLE - PROCESO DE TESTING*/
 
 //1_Se creará una instancia de la clase “ProductManager”
 const manager = new ProductManager();
@@ -147,18 +144,4 @@ manager.getProducts();
 console.log("---------------------------------------")
 
 //7_Se evaluará que getProductById devuelva error si no encuentra el producto o el producto en caso de encontrarlo
-manager.getProductById(2);
-*/
-
-const manager = new ProductManager();
-// manager.getProducts();
-// console.log("---------------------------------------")
-manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123", 25);
-console.log("Se creo el primer archivo");
-
-manager.getProducts();
-console.log("Mostramos archivo");
-
-console.log("---------------------------------------")
-manager.addProduct("producto prueba", "Este es un producto prueba", 200, "Sin imagen", "abc123", 25);
-// manager.getProducts();
+manager.getProductById(1);
