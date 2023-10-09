@@ -10,7 +10,7 @@ class ProductManager {
         this.path = path;
     }
 
-    //Se crea el retorno para ver los productos ingresados.
+    //Se crea el retorno de los productos ingresados en el archivo database.json .
     getProductsArray = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
@@ -31,7 +31,11 @@ class ProductManager {
         }
     }
 
+    //Método para ver en pantalla los productos ingresados
     getProducts = async () =>{
+        if (!fs.existsSync(this.path) || fs.readFileSync(this.path, "utf-8") == "") {
+            return console.log(this.products);
+        }
         console.log(await this.getProductsArray());
     }
 
@@ -148,12 +152,12 @@ const manager = new ProductManager("./database.json");
 (async () => {
     await manager.getProducts();
     await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
-    await manager.getProducts();
-    await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
-    await manager.getProducts();
-    await manager.addProduct("555", "5", "55", "55", "5", 4795);
-    await manager.getProducts();
-    await manager.addProduct("a","A","A","AAAA","a",3123123);
-    await manager.getProducts();
-    await manager.getProductById(1);
+    // await manager.getProducts();
+    // await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
+    // await manager.getProducts();
+    // await manager.addProduct("555", "5", "55", "55", "5", 4795);
+    // await manager.getProducts();
+    // await manager.addProduct("a","A","A","AAAA","a",3123123);
+    // await manager.getProducts();
+    // await manager.getProductById(1);
 })();

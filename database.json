@@ -7,32 +7,5 @@
 		"thumbnail": "asdfasdfA",
 		"code": "dario",
 		"stock": 479
-	},
-	{
-		"id": 1,
-		"title": "Que ",
-		"description": "perdida",
-		"price": "de",
-		"thumbnail": "tiempo",
-		"code": "h",
-		"stock": 479
-	},
-	{
-		"id": 2,
-		"title": "555",
-		"description": "5",
-		"price": "55",
-		"thumbnail": "55",
-		"code": "5",
-		"stock": 4795
-	},
-	{
-		"id": 3,
-		"title": "a",
-		"description": "A",
-		"price": "A",
-		"thumbnail": "AAAA",
-		"code": "a",
-		"stock": 3123123
 	}
 ]
