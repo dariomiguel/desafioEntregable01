@@ -14,9 +14,16 @@ class ProductManager {
     getProducts = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
-            if (!fs.existsSync(this.path)) return console.log(this.products);
-            
+            if (!fs.existsSync(this.path)) {
+                return console.log(this.products);
+            }
+        
             const lectura = await fs.promises.readFile(this.path, "utf-8");
+
+            if(lectura === ""){
+                return console.log(this.products);
+            }
+
             this.products = JSON.parse(lectura);
             console.log(this.products);
             return this.products;
@@ -34,15 +41,15 @@ class ProductManager {
             if (this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
                 return console.log("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
             //Si no existe el archivo se crea uno
-            } else if (!fs.existsSync(this.path)) {
-                fs.writeFileSync(this.path, JSON.stringify(this.products));
+            } else if (!fs.existsSync(this.path) || fs.readFileSync(this.path, "utf-8") == "") {
+                fs.writeFileSync(this.path, JSON.stringify(this.products, null, "\t"));
             }
 
             //Si es válido la agrega al array de lista de productos.
             const lectura = await fs.promises.readFile(this.path, "utf-8");
             this.products = JSON.parse(lectura);
             this.add(title, description, price, thumbnail, code, stock);
-            const data = JSON.stringify(this.products);
+            const data = JSON.stringify(this.products, null, "\t");
             await fs.promises.writeFile(this.path, data, "utf-8");
         }
         catch (error) {
@@ -77,6 +84,7 @@ class ProductManager {
 
     //Verificación si existe un producto con el ID
     getProductById = (id) => {
+        this.products = this.getProducts();
         const product = this.products.find((product) => product.id == id);
 
         product ?
@@ -135,11 +143,14 @@ manager.getProductById(1);
 const manager = new ProductManager("./database.json");
 
 (async () => {
-    await manager.getProducts();
-    await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
-    await manager.getProducts();
-    await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
-    await manager.getProducts();
-    await manager.addProduct("555", "5", "55", "55", "5", 4795);
-    await manager.getProducts();
+    // await manager.getProducts();
+    // await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
+    // await manager.getProducts();
+    // await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
+    // await manager.getProducts();
+    // await manager.addProduct("555", "5", "55", "55", "5", 4795);
+    // await manager.getProducts();
+    // await manager.addProduct("a","A","A","AAAA","a",3123123);
+    // await manager.getProducts();
+    await manager.getProductById(1);
 })();
