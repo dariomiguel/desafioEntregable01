@@ -14,13 +14,10 @@ class ProductManager {
     getProducts = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
-            if (!fs.existsSync(this.path)) {
-                console.log(this.products);
-                return this.products;
-            }
+            if (!fs.existsSync(this.path)) return console.log(this.products);
+            
             const lectura = await fs.promises.readFile(this.path, "utf-8");
             this.products = JSON.parse(lectura);
-            console.log("Se ejecuta el READ");
             console.log(this.products);
             return this.products;
         } catch (error) {
@@ -32,23 +29,20 @@ class ProductManager {
     //Se crea el método para agregar productos validando previamente.
     addProduct = async (title, description, price, thumbnail, code, stock) =>  {
 
-        //Antes de agregar verifica si es válido o no
         try{
+            //Antes de agregar verifica si es válido o no
             if (this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
-                console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
-                return
+                return console.log("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
+            //Si no existe el archivo se crea uno
             } else if (!fs.existsSync(this.path)) {
                 fs.writeFileSync(this.path, JSON.stringify(this.products));
             }
 
             //Si es válido la agrega al array de lista de productos.
-            // this.add(title, description, price, thumbnail, code, stock);
-            // this.addAsync(this.products, undefined, "\t");
             const lectura = await fs.promises.readFile(this.path, "utf-8");
             this.products = JSON.parse(lectura);
             this.add(title, description, price, thumbnail, code, stock);
             const data = JSON.stringify(this.products);
-            console.log("Se ejecuta el WRITE");
             await fs.promises.writeFile(this.path, data, "utf-8");
         }
         catch (error) {
@@ -71,19 +65,6 @@ class ProductManager {
         this.products.push(product);
     }
 
-    //Método asincronico para agregar los objetos.
-    addAsync = async (data) => {
-        data = JSON.stringify(data);
-        fs.promises.writeFile(this.path, data)
-            .then(() => {
-                console.log("Se ejecutó exitosamente la escritura del archivo")
-            })
-            .catch((error) => {
-                console.log("Hubo un error en la escritura del archivo ", error);
-            })
-    }
-
-
     //Validación para verificar que el código no se repita o que no se hayan cargado todos los datos.
     isNotValidCode = (title, description, price, thumbnail, code, stock) => {
         //Verificamos que existe un codigo con el mismo nombre.
@@ -103,22 +84,9 @@ class ProductManager {
             console.log(`No hay un producto con el número de ID ${id}.`)
     }
 
-    //Cambiar uno de los campos
-    updateProduct = (opcion) => {
-        console.log("Seleccione el id del producto");
-
-        this.getProductById();
-
-        console.log(`Seleccione la opción que desea modificar:
-        1_Nombre de producto 
-        2_Descripción del producto
-        3_Precio
-        4_Ruta de imagen
-        5_Código identificador
-        6_Stock`)
-    }
-
-    //
+    //TO-DO
+    // getProductById
+    // updateProduct
     // deleteProduct
 }
 
