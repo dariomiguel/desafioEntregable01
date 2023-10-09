@@ -5,29 +5,58 @@ const fs = require('fs')
 class ProductManager {
 
     //Se construye el elemento inicial (un array vacío).
-    constructor() {
+    constructor(path) {
         this.products = [];
-        this.path = "./database.json";
+        this.path = path;
     }
 
     //Se crea el retorno para ver los productos ingresados.
     getProducts = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
-            const lecturaJson = await fs.promises.readFile(this.path, "utf-8");
-            const lectura = lecturaJson === "" ? "[]" : JSON.parse(lecturaJson)
-            return console.log(lectura)
-        }catch (e) {
-            if (e.code === "ENOENT" ) {
-                await this.addAsync(this.products); // Crear el archivo
-                return console.log(this.products);;
-            } else {
-                console.error("Error al leer el archivo:", e);
-                throw e;
+            if (!fs.existsSync(this.path)) {
+                console.log(this.products);
+                return this.products;
             }
+            const lectura = await fs.promises.readFile(this.path, "utf-8");
+            this.products = JSON.parse(lectura);
+            console.log("Se ejecuta el READ");
+            console.log(this.products);
+            return this.products;
+        } catch (error) {
+            console.log("Hubo un error en el READ", error);
+            throw error;
         }
     }
 
+    //Se crea el método para agregar productos validando previamente.
+    addProduct = async (title, description, price, thumbnail, code, stock) =>  {
+
+        //Antes de agregar verifica si es válido o no
+        try{
+            if (this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
+                console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
+                return
+            } else if (!fs.existsSync(this.path)) {
+                fs.writeFileSync(this.path, JSON.stringify(this.products));
+            }
+
+            //Si es válido la agrega al array de lista de productos.
+            // this.add(title, description, price, thumbnail, code, stock);
+            // this.addAsync(this.products, undefined, "\t");
+            const lectura = await fs.promises.readFile(this.path, "utf-8");
+            this.products = JSON.parse(lectura);
+            this.add(title, description, price, thumbnail, code, stock);
+            const data = JSON.stringify(this.products);
+            console.log("Se ejecuta el WRITE");
+            await fs.promises.writeFile(this.path, data, "utf-8");
+        }
+        catch (error) {
+            console.log("Hubo un error en el proceso", error);
+            throw error;
+        }
+    }
+    
     //Se crea un método para agregar un nuevo producto a la lista de productos.
     add(title, description, price, thumbnail, code, stock) {
         const product = {
@@ -38,24 +67,8 @@ class ProductManager {
             thumbnail: thumbnail,
             code: code,
             stock: stock
-        }
-
+        };
         this.products.push(product);
-
-    }
-
-    //Se crea el método para agregar productos validando previamente.
-    addProduct(title, description, price, thumbnail, code, stock) {
-
-        //Antes de agregar verifica si es válido o no
-        if (this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
-            console.error("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
-            return
-        }
-
-        //Si es válido la agrega al array de lista de productos.
-        this.add(title, description, price, thumbnail, code, stock);
-        this.addAsync(this.products, undefined, "\t");
     }
 
     //Método asincronico para agregar los objetos.
@@ -111,7 +124,7 @@ class ProductManager {
 
 
 /*Consignas
-DESAFÍO ENTREGABLE - PROCESO DE TESTING*/
+DESAFÍO ENTREGABLE - PROCESO DE TESTING*
 
 //1_Se creará una instancia de la clase “ProductManager”
 const manager = new ProductManager();
@@ -145,3 +158,20 @@ console.log("---------------------------------------")
 
 //7_Se evaluará que getProductById devuelva error si no encuentra el producto o el producto en caso de encontrarlo
 manager.getProductById(1);
+*/
+
+// const manager = new ProductManager();
+// manager.getProducts();
+// manager.addProduct("a","A","A","AAAA","a",3123123);
+
+const manager = new ProductManager("./database.json");
+
+(async () => {
+    await manager.getProducts();
+    await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
+    await manager.getProducts();
+    await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
+    await manager.getProducts();
+    await manager.addProduct("555", "5", "55", "55", "5", 4795);
+    await manager.getProducts();
+})();
