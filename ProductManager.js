@@ -11,13 +11,12 @@ class ProductManager {
     }
 
     //Se crea el retorno para ver los productos ingresados.
-    getProducts = async () => {
+    getProductsArray = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
             if (!fs.existsSync(this.path)) {
                 return console.log(this.products);
             }
-        
             const lectura = await fs.promises.readFile(this.path, "utf-8");
 
             if(lectura === ""){
@@ -25,12 +24,15 @@ class ProductManager {
             }
 
             this.products = JSON.parse(lectura);
-            console.log(this.products);
             return this.products;
         } catch (error) {
             console.log("Hubo un error en el READ", error);
             throw error;
         }
+    }
+
+    getProducts = async () =>{
+        console.log(await this.getProductsArray());
     }
 
     //Se crea el método para agregar productos validando previamente.
@@ -49,6 +51,7 @@ class ProductManager {
             const lectura = await fs.promises.readFile(this.path, "utf-8");
             this.products = JSON.parse(lectura);
             this.add(title, description, price, thumbnail, code, stock);
+
             const data = JSON.stringify(this.products, null, "\t");
             await fs.promises.writeFile(this.path, data, "utf-8");
         }
@@ -83,8 +86,8 @@ class ProductManager {
     }
 
     //Verificación si existe un producto con el ID
-    getProductById = (id) => {
-        this.products = this.getProducts();
+    getProductById = async(id) => {
+        this.products = await this.getProductsArray();
         const product = this.products.find((product) => product.id == id);
 
         product ?
@@ -143,14 +146,14 @@ manager.getProductById(1);
 const manager = new ProductManager("./database.json");
 
 (async () => {
-    // await manager.getProducts();
-    // await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
-    // await manager.getProducts();
-    // await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
-    // await manager.getProducts();
-    // await manager.addProduct("555", "5", "55", "55", "5", 4795);
-    // await manager.getProducts();
-    // await manager.addProduct("a","A","A","AAAA","a",3123123);
-    // await manager.getProducts();
+    await manager.getProducts();
+    await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
+    await manager.getProducts();
+    await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
+    await manager.getProducts();
+    await manager.addProduct("555", "5", "55", "55", "5", 4795);
+    await manager.getProducts();
+    await manager.addProduct("a","A","A","AAAA","a",3123123);
+    await manager.getProducts();
     await manager.getProductById(1);
 })();
