@@ -91,17 +91,37 @@ class ProductManager {
 
     //Verificación si existe un producto con el ID
     getProductById = async(id) => {
-        this.products = await this.getProductsArray();
-        const product = this.products.find((product) => product.id == id);
-
+        const product = await this.searchById(id);
         product ?
             console.log(product) :
             console.log(`No hay un producto con el número de ID ${id}.`)
     }
+    
+    searchById = async(id) => {
+        this.products = await this.getProductsArray();
+        const product = this.products.find((product) => product.id == id);
+        return product
+    }
+
+    //Método para buscar un ID especificado, con la clave y el valor a actualizar 
+    updateProduct = async(id, key, newValue) =>{
+        const product = await this.searchById(id);
+        if(product){
+            this.products = await this.getProductsArray();
+            //Buscamos en que indice el id coincide
+            const indice = this.products.findIndex((objeto) => objeto.id === id);
+
+            product[key] = newValue; 
+            this.products[indice] = product;
+
+            const data = JSON.stringify(this.products, null, "\t");
+            await fs.promises.writeFile(this.path, data, "utf-8");
+        }else{
+            console.log(`No hay un producto con el número de ID ${id}.`)
+        }
+    }
 
     //TO-DO
-    // getProductById
-    // updateProduct
     // deleteProduct
 }
 
@@ -150,8 +170,8 @@ manager.getProductById(1);
 const manager = new ProductManager("./database.json");
 
 (async () => {
-    await manager.getProducts();
-    await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
+    // await manager.getProducts();
+    // await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
     // await manager.getProducts();
     // await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
     // await manager.getProducts();
@@ -159,5 +179,8 @@ const manager = new ProductManager("./database.json");
     // await manager.getProducts();
     // await manager.addProduct("a","A","A","AAAA","a",3123123);
     // await manager.getProducts();
-    // await manager.getProductById(1);
+    // await manager.getProductById(3);
+    await manager.updateProduct(3, "title", "150 pokemon");
+    await manager.getProductById(3);
+
 })();
