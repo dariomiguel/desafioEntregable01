@@ -8,6 +8,9 @@ class ProductManager {
     constructor(path) {
         this.products = [];
         this.path = path;
+
+        this.amountProductsPrevious = this.loadProducts();
+        this.counter = this.amountProductsPrevious.length;
     }
 
     //Se crea el retorno de los productos ingresados en el archivo database.json .
@@ -15,12 +18,12 @@ class ProductManager {
         //Verificamos que exista el archivo antes de leerlo
         try {
             if (!fs.existsSync(this.path)) {
-                return console.log(this.products);
+                return this.products;
             }
             const lectura = await fs.promises.readFile(this.path, "utf-8");
 
             if(lectura === ""){
-                return console.log(this.products);
+                return this.products;
             }
 
             this.products = JSON.parse(lectura);
@@ -66,9 +69,9 @@ class ProductManager {
     }
     
     //Se crea un método para agregar un nuevo producto a la lista de productos.
-    add(title, description, price, thumbnail, code, stock) {
+    add (title, description, price, thumbnail, code, stock) {
         const product = {
-            id: this.products.length,
+            id: this.createID(),
             title: title,
             description: description,
             price: price,
@@ -121,6 +124,32 @@ class ProductManager {
         }
     }
 
+    createID() {
+        if (!fs.existsSync(this.path) || fs.readFileSync(this.path, "utf-8") == "") {
+            return 0;
+        }
+        const newId = this.counter;
+        this.counter++; 
+        return newId;
+    }
+
+    loadProducts() {
+        try {
+            if (!fs.existsSync(this.path)) {
+                return [];
+            }
+            const data = fs.readFileSync(this.path, 'utf-8');
+            if (data) {
+                return JSON.parse(data);
+            }
+            return [];
+        } catch (error) {
+            console.error('Error al cargar productos desde el archivo JSON:', error);
+            return [];
+        }
+    }
+    
+
     //TO-DO
     // deleteProduct
 }
@@ -171,16 +200,19 @@ const manager = new ProductManager("./database.json");
 
 (async () => {
     // await manager.getProducts();
-    // await manager.addProduct("178", "Aasd", "1231A", "asdfasdfA", "dario", 479);
-    // await manager.getProducts();
-    // await manager.addProduct("Que ", "perdida", "de", "tiempo", "h", 479);
-    // await manager.getProducts();
-    // await manager.addProduct("555", "5", "55", "55", "5", 4795);
-    // await manager.getProducts();
-    // await manager.addProduct("a","A","A","AAAA","a",3123123);
-    // await manager.getProducts();
+    await manager.addProduct("Camiseta de algodón", "Camiseta cómoda y transpirable", 19.99, "camiseta.jpg", "SKU123",50);
+//    await manager.getProducts();
+    await manager.addProduct("Zapatillas deportivas", "Zapatillas ideales para hacer ejercicio", 29.99, "zapatillas.jpg", "SKU456",30);
+//    await manager.getProducts();
+    await manager.addProduct("Bolso de cuero", "Bolso elegante de cuero genuino", 39.99, "bolso.jpg", "SKU789", 20);
+//    await manager.getProducts();
+    await manager.addProduct("Tablet Android", "Tablet con sistema operativo Android", 199.99, "tablet.jpg", "SKU012", 10);
+//    await manager.getProducts();
+    await manager.addProduct("Cámara digital", "Cámara de alta resolución para fotografía", 299.99, "camara.jpg", "SKU345", 5);
+//    await manager.getProducts();
     // await manager.getProductById(3);
-    await manager.updateProduct(3, "title", "150 pokemon");
-    await manager.getProductById(3);
-
+    // await manager.updateProduct(3, "title", "150 pokemon");
+    // await manager.getProductById(3);
+    await manager.addProduct("a", "a", 0.99, "a", "a", 5);
+//    await manager.getProducts();
 })();
