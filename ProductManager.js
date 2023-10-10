@@ -9,8 +9,7 @@ class ProductManager {
         this.products = [];
         this.path = path;
 
-        this.amountProductsPrevious = this.loadProducts();
-        this.counter = this.amountProductsPrevious.length;
+        this.counter = 0;
     }
 
     //Se crea el retorno de los productos ingresados en el archivo database.json .
@@ -125,33 +124,40 @@ class ProductManager {
     }
 
     createID() {
-        if (!fs.existsSync(this.path) || fs.readFileSync(this.path, "utf-8") == "") {
-            return 0;
+        // Verificar si hay productos en el array
+        if (this.products.length === 0) {
+            this.counter = 0;
+        } else {
+            // Obtener el ID más grande del array de productos
+            const maxID = Math.max(...this.products.map((product) => product.id));
+            
+            // Incrementar el contador en 1 y devolverlo como el próximo ID
+            this.counter = maxID + 1;
         }
-        const newId = this.counter;
-        this.counter++; 
-        return newId;
-    }
-
-    loadProducts() {
-        try {
-            if (!fs.existsSync(this.path)) {
-                return [];
-            }
-            const data = fs.readFileSync(this.path, 'utf-8');
-            if (data) {
-                return JSON.parse(data);
-            }
-            return [];
-        } catch (error) {
-            console.error('Error al cargar productos desde el archivo JSON:', error);
-            return [];
-        }
+        
+        return this.counter;
     }
     
+    //Método para borrar uno de los productos
+    deleteProduct = async(id) =>{
+        const product = await this.searchById(id);
+        if(product){
+            this.products = await this.getProductsArray();
+            //Buscamos en que indice el id coincide
+            const indice = this.products.findIndex((objeto) => objeto.id === id);
 
-    //TO-DO
-    // deleteProduct
+            for (const key in product) {
+                if (key !== 'id') {
+                    product[key] = '';
+                }
+            }      
+            
+            this.products[indice] = product;
+
+            const data = JSON.stringify(this.products, null, "\t");
+            await fs.promises.writeFile(this.path, data, "utf-8");
+        }else{console.log(`No hay un producto con el número de ID ${id}.`)}
+    }
 }
 
 
@@ -200,19 +206,23 @@ const manager = new ProductManager("./database.json");
 
 (async () => {
     // await manager.getProducts();
-    await manager.addProduct("Camiseta de algodón", "Camiseta cómoda y transpirable", 19.99, "camiseta.jpg", "SKU123",50);
-//    await manager.getProducts();
-    await manager.addProduct("Zapatillas deportivas", "Zapatillas ideales para hacer ejercicio", 29.99, "zapatillas.jpg", "SKU456",30);
-//    await manager.getProducts();
-    await manager.addProduct("Bolso de cuero", "Bolso elegante de cuero genuino", 39.99, "bolso.jpg", "SKU789", 20);
-//    await manager.getProducts();
-    await manager.addProduct("Tablet Android", "Tablet con sistema operativo Android", 199.99, "tablet.jpg", "SKU012", 10);
-//    await manager.getProducts();
-    await manager.addProduct("Cámara digital", "Cámara de alta resolución para fotografía", 299.99, "camara.jpg", "SKU345", 5);
-//    await manager.getProducts();
+    // await manager.addProduct("Camiseta de algodón", "Camiseta cómoda y transpirable", 19.99, "camiseta.jpg", "SKU123",50);
+    // await manager.getProducts();
+    // await manager.addProduct("Zapatillas deportivas", "Zapatillas ideales para hacer ejercicio", 29.99, "zapatillas.jpg", "SKU456",30);
+    // await manager.getProducts();
+    // await manager.addProduct("Bolso de cuero", "Bolso elegante de cuero genuino", 39.99, "bolso.jpg", "SKU789", 20);
+    // await manager.getProducts();
+    // await manager.addProduct("Tablet Android", "Tablet con sistema operativo Android", 199.99, "tablet.jpg", "SKU012", 10);
+    // await manager.getProducts();
+    // await manager.addProduct("Cámara digital", "Cámara de alta resolución para fotografía", 299.99, "camara.jpg", "SKU345", 5);
+    // await manager.getProducts();
     // await manager.getProductById(3);
     // await manager.updateProduct(3, "title", "150 pokemon");
     // await manager.getProductById(3);
-    await manager.addProduct("a", "a", 0.99, "a", "a", 5);
-//    await manager.getProducts();
+    // await manager.addProduct("h", "h", 0.99, "h", "h", 5);
+    // await manager.addProduct("a", "a", 0.99, "a", "a", 5);
+    // await manager.getProducts();
+    // await manager.addProduct("hola", "hola", 0.99, "hola", "hola", 5);
+    await manager.deleteProduct(7);
+    await manager.getProducts();
 })();
