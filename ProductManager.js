@@ -165,7 +165,7 @@ class ProductManager {
 DESAFÍO ENTREGABLE - PROCESO DE TESTING*/
 
 //1_Se creará una instancia de la clase “ProductManager”
-const manager = new ProductManager();
+const manager = new ProductManager("./database");
 
 //Se crea una función asincronica que siga el orden necesitado
 (async () => {
@@ -194,7 +194,7 @@ const manager = new ProductManager();
     await manager.updateProduct(0, "title", "150 pokemon");
 
     //8 Se llamará al método “deleteProduct”, se evaluará que realmente se elimine el producto o que arroje un error en caso de no existir.
-    await manager.deleteProduct(2);
+    await manager.deleteProduct(0);
 
     //Más productos de prueba
     // await manager.addProduct("Zapatillas deportivas", "Zapatillas ideales para hacer ejercicio", 29.99, "zapatillas.jpg", "SKU456",30);
