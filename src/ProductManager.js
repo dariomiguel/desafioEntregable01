@@ -16,7 +16,7 @@ class ProductManager {
     getProductsArray = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
-            if (!existsSync(this.path)) {
+            if(!existsSync(this.path)) {
                 return this.products;
             }
             const lectura = await fs.promises.readFile(this.path, "utf-8");
@@ -35,7 +35,7 @@ class ProductManager {
 
     //Método para ver en pantalla los productos ingresados
     getProducts = async () =>{
-        if (!existsSync(this.path) || readFileSync(this.path, "utf-8") == "") {
+        if(!existsSync(this.path) || readFileSync(this.path, "utf-8") == "") {
             return console.log(this.products);
         }
         console.log(await this.getProductsArray());
@@ -162,7 +162,7 @@ class ProductManager {
 
 
 /*Consignas
-DESAFÍO ENTREGABLE - PROCESO DE TESTING*/
+DESAFÍO ENTREGABLE - PROCESO DE TESTING
 
 //1_Se creará una instancia de la clase “ProductManager”
 const manager = new ProductManager("./database");
@@ -212,4 +212,6 @@ const manager = new ProductManager("./database");
     // await manager.addProduct("hola", "hola", 0.99, "hola", "hola", 5);
     
     // await manager.getProducts();
-})();
+})();*/
+
+export default ProductManager
