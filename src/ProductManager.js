@@ -1,5 +1,5 @@
 //Importamos el módulo para interactuar con archivos
-import { existsSync, promises, readFileSync, writeFileSync } from 'fs';
+import fs from 'fs';
 
 //Creamos la clase ProductManager que contendra los productos y metodos que necesitemos para la actividad.
 class ProductManager {
@@ -19,7 +19,7 @@ class ProductManager {
             if (!existsSync(this.path)) {
                 return this.products;
             }
-            const lectura = await promises.readFile(this.path, "utf-8");
+            const lectura = await fs.promises.readFile(this.path, "utf-8");
 
             if(lectura === ""){
                 return this.products;
@@ -54,12 +54,12 @@ class ProductManager {
             }
 
             //Si es válido la agrega al array de lista de productos.
-            const lectura = await promises.readFile(this.path, "utf-8");
+            const lectura = await fs.promises.readFile(this.path, "utf-8");
             this.products = JSON.parse(lectura);
             this.add(title, description, price, thumbnail, code, stock);
 
             const data = JSON.stringify(this.products, null, "\t");
-            await promises.writeFile(this.path, data, "utf-8");
+            await fs.promises.writeFile(this.path, data, "utf-8");
         }
         catch (error) {
             console.log("Hubo un error en el proceso", error);
@@ -117,7 +117,7 @@ class ProductManager {
             this.products[indice] = product;
 
             const data = JSON.stringify(this.products, null, "\t");
-            await promises.writeFile(this.path, data, "utf-8");
+            await fs.promises.writeFile(this.path, data, "utf-8");
         }else{
             console.log(`No hay un producto con el número de ID ${id}.`)
         }
@@ -155,7 +155,7 @@ class ProductManager {
             this.products[indice] = product;
 
             const data = JSON.stringify(this.products, null, "\t");
-            await promises.writeFile(this.path, data, "utf-8");
+            await fs.promises.writeFile(this.path, data, "utf-8");
         }else{console.log(`No hay un producto con el número de ID ${id}.`)}
     }
 }
