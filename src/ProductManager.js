@@ -6,51 +6,38 @@ class ProductManager {
 
     //Se construye el elemento inicial (un array vacío).
     constructor(path) {
-        this.products = [];
+        this.products = this.getProducts() || [];
         this.path = path;
 
         this.counter = 0;
+
     }
 
     //Se crea el retorno de los productos ingresados en el archivo database.json .
-    getProductsArray = async () => {
+    getProducts = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
-            if(!existsSync(this.path)) {
-                return this.products;
-            }
+            if (!fs.existsSync(this.path)) return [];
+
             const lectura = await fs.promises.readFile(this.path, "utf-8");
+            if(!lectura) return this.products; 
 
-            if(lectura === ""){
-                return this.products;
-            }
+            return  this.products = JSON.parse(lectura) || [];
 
-            this.products = JSON.parse(lectura);
-            return this.products;
         } catch (error) {
             console.log("Hubo un error en el READ", error);
             throw error;
         }
     }
 
-    //Método para ver en pantalla los productos ingresados
-    getProducts = async () =>{
-        if(!existsSync(this.path) || readFileSync(this.path, "utf-8") == "") {
-            return console.log(this.products);
-        }
-        console.log(await this.getProductsArray());
-    }
-
     //Se crea el método para agregar productos validando previamente.
     addProduct = async (title, description, price, thumbnail, code, stock) =>  {
 
         try{
+            if (!fs.existsSync(this.path)) await fs.promises.writeFile(this.path, JSON.stringify([]), "utf-8");;
             //Antes de agregar verifica si es válido o no
-            if (this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
+            if (await this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
                 return console.log("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
-            //Si no existe el archivo se crea uno
-            } else if (!existsSync(this.path) || readFileSync(this.path, "utf-8") == "") {
-                writeFileSync(this.path, JSON.stringify(this.products, null, "\t"));
             }
 
             //Si es válido la agrega al array de lista de productos.
@@ -82,7 +69,8 @@ class ProductManager {
     }
 
     //Validación para verificar que el código no se repita o que no se hayan cargado todos los datos.
-    isNotValidCode = (title, description, price, thumbnail, code, stock) => {
+    isNotValidCode = async(title, description, price, thumbnail, code, stock) => {
+        this.products = await this.getProducts();
         //Verificamos que existe un codigo con el mismo nombre.
         const checker = this.products.some((product) => product.code === code);
         //Verificamos que esten todos los productos en la carga de datos.
@@ -93,23 +81,20 @@ class ProductManager {
 
     //Verificación si existe un producto con el ID
     getProductById = async(id) => {
-        const product = await this.searchById(id);
-        product ?
-            console.log(product) :
-            console.log(`No hay un producto con el número de ID ${id}.`)
-    }
-    
-    searchById = async(id) => {
-        this.products = await this.getProductsArray();
+        this.products = await this.getProducts();
         const product = this.products.find((product) => product.id == id);
+
+        if(!product) return `No hay un producto con el número de ID ${id}.`
         return product
     }
 
     //Método para buscar un ID especificado, con la clave y el valor a actualizar 
     updateProduct = async(id, key, newValue) =>{
-        const product = await this.searchById(id);
-        if(product){
-            this.products = await this.getProductsArray();
+        try{
+            const product = await this.getProductById(id);
+            if(typeof product === "string") return console.log(product);
+
+            this.products = await this.getProducts();
             //Buscamos en que indice el id coincide
             const indice = this.products.findIndex((objeto) => objeto.id === id);
 
@@ -118,8 +103,9 @@ class ProductManager {
 
             const data = JSON.stringify(this.products, null, "\t");
             await fs.promises.writeFile(this.path, data, "utf-8");
-        }else{
-            console.log(`No hay un producto con el número de ID ${id}.`)
+            
+        } catch (error) {
+            console.log("Hubo un error en el proceso de actualización:", error);
         }
     }
 
@@ -130,7 +116,6 @@ class ProductManager {
         } else {
             // Obtener el ID más grande del array de productos
             const maxID = Math.max(...this.products.map((product) => product.id));
-            
             // Incrementar el contador en 1 y devolverlo como el próximo ID
             this.counter = maxID + 1;
         }
@@ -140,23 +125,25 @@ class ProductManager {
     
     //Método para borrar uno de los productos
     deleteProduct = async(id) =>{
-        const product = await this.searchById(id);
-        if(product){
-            this.products = await this.getProductsArray();
+        try{
+            const product = await this.getProductById(id);
+            if(typeof product === "string") return console.log(product);
+
+            this.products = await this.getProducts();
             //Buscamos en que indice el id coincide
             const indice = this.products.findIndex((objeto) => objeto.id === id);
 
             for (const key in product) {
-                if (key !== 'id') {
-                    product[key] = '';
-                }
-            }      
-            
+                if (key !== 'id') product[key] = '';
+            }
+
             this.products[indice] = product;
 
             const data = JSON.stringify(this.products, null, "\t");
             await fs.promises.writeFile(this.path, data, "utf-8");
-        }else{console.log(`No hay un producto con el número de ID ${id}.`)}
+        }catch(error) {
+            console.log("Hubo un error al intentar eliminar el producto ", error);
+        }
     }
 }
 
