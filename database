@@ -1,0 +1,56 @@
+[
+	{
+		"id": 0,
+		"title": "",
+		"description": "",
+		"price": "",
+		"thumbnail": "",
+		"code": "",
+		"stock": ""
+	},
+	{
+		"id": 1,
+		"title": "Camiseta de algodón",
+		"description": "Camiseta cómoda y transpirable",
+		"price": 19.99,
+		"thumbnail": "camiseta.jpg",
+		"code": "SKU123",
+		"stock": 50
+	},
+	{
+		"id": 2,
+		"title": "Zapatillas deportivas",
+		"description": "Zapatillas ideales para hacer ejercicio",
+		"price": 29.99,
+		"thumbnail": "zapatillas.jpg",
+		"code": "SKU456",
+		"stock": 30
+	},
+	{
+		"id": 3,
+		"title": "Bolso de cuero",
+		"description": "Bolso elegante de cuero genuino",
+		"price": 39.99,
+		"thumbnail": "bolso.jpg",
+		"code": "SKU789",
+		"stock": 20
+	},
+	{
+		"id": 4,
+		"title": "Tablet Android",
+		"description": "Tablet con sistema operativo Android",
+		"price": 199.99,
+		"thumbnail": "tablet.jpg",
+		"code": "SKU012",
+		"stock": 10
+	},
+	{
+		"id": 5,
+		"title": "Cámara digital",
+		"description": "Cámara de alta resolución para fotografía",
+		"price": 299.99,
+		"thumbnail": "camara.jpg",
+		"code": "SKU345",
+		"stock": 5
+	}
+]

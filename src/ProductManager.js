@@ -1,6 +1,5 @@
-
 //Importamos el módulo para interactuar con archivos
-const fs = require('fs')
+import { existsSync, promises, readFileSync, writeFileSync } from 'fs';
 
 //Creamos la clase ProductManager que contendra los productos y metodos que necesitemos para la actividad.
 class ProductManager {
@@ -17,10 +16,10 @@ class ProductManager {
     getProductsArray = async () => {
         //Verificamos que exista el archivo antes de leerlo
         try {
-            if (!fs.existsSync(this.path)) {
+            if (!existsSync(this.path)) {
                 return this.products;
             }
-            const lectura = await fs.promises.readFile(this.path, "utf-8");
+            const lectura = await promises.readFile(this.path, "utf-8");
 
             if(lectura === ""){
                 return this.products;
@@ -36,7 +35,7 @@ class ProductManager {
 
     //Método para ver en pantalla los productos ingresados
     getProducts = async () =>{
-        if (!fs.existsSync(this.path) || fs.readFileSync(this.path, "utf-8") == "") {
+        if (!existsSync(this.path) || readFileSync(this.path, "utf-8") == "") {
             return console.log(this.products);
         }
         console.log(await this.getProductsArray());
@@ -50,17 +49,17 @@ class ProductManager {
             if (this.isNotValidCode(title, description, price, thumbnail, code, stock)) {
                 return console.log("Atención: Verifique que todos los datos se hayan cargado correctamente o que el código de producto no se repita!");
             //Si no existe el archivo se crea uno
-            } else if (!fs.existsSync(this.path) || fs.readFileSync(this.path, "utf-8") == "") {
-                fs.writeFileSync(this.path, JSON.stringify(this.products, null, "\t"));
+            } else if (!existsSync(this.path) || readFileSync(this.path, "utf-8") == "") {
+                writeFileSync(this.path, JSON.stringify(this.products, null, "\t"));
             }
 
             //Si es válido la agrega al array de lista de productos.
-            const lectura = await fs.promises.readFile(this.path, "utf-8");
+            const lectura = await promises.readFile(this.path, "utf-8");
             this.products = JSON.parse(lectura);
             this.add(title, description, price, thumbnail, code, stock);
 
             const data = JSON.stringify(this.products, null, "\t");
-            await fs.promises.writeFile(this.path, data, "utf-8");
+            await promises.writeFile(this.path, data, "utf-8");
         }
         catch (error) {
             console.log("Hubo un error en el proceso", error);
@@ -118,7 +117,7 @@ class ProductManager {
             this.products[indice] = product;
 
             const data = JSON.stringify(this.products, null, "\t");
-            await fs.promises.writeFile(this.path, data, "utf-8");
+            await promises.writeFile(this.path, data, "utf-8");
         }else{
             console.log(`No hay un producto con el número de ID ${id}.`)
         }
@@ -156,7 +155,7 @@ class ProductManager {
             this.products[indice] = product;
 
             const data = JSON.stringify(this.products, null, "\t");
-            await fs.promises.writeFile(this.path, data, "utf-8");
+            await promises.writeFile(this.path, data, "utf-8");
         }else{console.log(`No hay un producto con el número de ID ${id}.`)}
     }
 }
@@ -185,6 +184,11 @@ const manager = new ProductManager("./database");
     await manager.addProduct("Camiseta de algodón", "Camiseta cómoda y transpirable", 19.99, "camiseta.jpg", "SKU123",50);
     await manager.addProduct("Camiseta de algodón", "Camiseta cómoda y transpirable", 19.99, "camiseta.jpg", "SKU123",50);
 
+    // await manager.addProduct("Zapatillas deportivas", "Zapatillas ideales para hacer ejercicio", 29.99, "zapatillas.jpg", "SKU456",30);
+    // await manager.addProduct("Bolso de cuero", "Bolso elegante de cuero genuino", 39.99, "bolso.jpg", "SKU789", 20);
+    // await manager.addProduct("Tablet Android", "Tablet con sistema operativo Android", 199.99, "tablet.jpg", "SKU012", 10);
+    // await manager.addProduct("Cámara digital", "Cámara de alta resolución para fotografía", 299.99, "camara.jpg", "SKU345", 5);
+    
     //5_Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
     await manager.getProducts();
 
